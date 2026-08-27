@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as RegistryRouteImport } from './routes/registry'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
+import { Route as ApiPublicPredictRiskRouteImport } from './routes/api/public/predict-risk'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistryRoute = RegistryRouteImport.update({
+  id: '/registry',
+  path: '/registry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsIdRoute = AnimalsIdRouteImport.update({
+  id: '/animals/$id',
+  path: '/animals/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPredictRiskRoute = ApiPublicPredictRiskRouteImport.update({
+  id: '/api/public/predict-risk',
+  path: '/api/public/predict-risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
+  '/data': typeof DataRoute
+  '/map': typeof MapRoute
+  '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
+  '/data': typeof DataRoute
+  '/map': typeof MapRoute
+  '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
+  '/data': typeof DataRoute
+  '/map': typeof MapRoute
+  '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
+  '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/auth'
+    | '/data'
+    | '/map'
+    | '/registry'
+    | '/settings'
+    | '/animals/$id'
+    | '/api/public/predict-risk'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/auth'
+    | '/data'
+    | '/map'
+    | '/registry'
+    | '/settings'
+    | '/animals/$id'
+    | '/api/public/predict-risk'
+  id:
+    | '__root__'
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/auth'
+    | '/data'
+    | '/map'
+    | '/registry'
+    | '/settings'
+    | '/animals/$id'
+    | '/api/public/predict-risk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  AuthRoute: typeof AuthRoute
+  DataRoute: typeof DataRoute
+  MapRoute: typeof MapRoute
+  RegistryRoute: typeof RegistryRoute
+  SettingsRoute: typeof SettingsRoute
+  AnimalsIdRoute: typeof AnimalsIdRoute
+  ApiPublicPredictRiskRoute: typeof ApiPublicPredictRiskRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +169,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registry': {
+      id: '/registry'
+      path: '/registry'
+      fullPath: '/registry'
+      preLoaderRoute: typeof RegistryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/$id': {
+      id: '/animals/$id'
+      path: '/animals/$id'
+      fullPath: '/animals/$id'
+      preLoaderRoute: typeof AnimalsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/predict-risk': {
+      id: '/api/public/predict-risk'
+      path: '/api/public/predict-risk'
+      fullPath: '/api/public/predict-risk'
+      preLoaderRoute: typeof ApiPublicPredictRiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  AuthRoute: AuthRoute,
+  DataRoute: DataRoute,
+  MapRoute: MapRoute,
+  RegistryRoute: RegistryRoute,
+  SettingsRoute: SettingsRoute,
+  AnimalsIdRoute: AnimalsIdRoute,
+  ApiPublicPredictRiskRoute: ApiPublicPredictRiskRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
