@@ -29,7 +29,7 @@ export const Route = createFileRoute("/analytics")({
       { property: "og:description", content: "Risk trends, antimicrobial usage and cost savings." },
     ],
   }),
-  component: Analytics;
+  component: Analytics,
 });
 
 function Analytics() {
