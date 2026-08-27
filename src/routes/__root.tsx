@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { I18nProvider } from "@/lib/i18n";
+import { AppStoreProvider } from "@/lib/app-store";
+import { AppShell } from "@/components/AppShell";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -77,20 +81,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "MastiGuard — Bovine Mastitis Early Warning" },
+      {
+        name: "description",
+        content:
+          "AI-powered mastitis early warning for dairy farmers, vets and cooperatives in India.",
+      },
+      { property: "og:title", content: "MastiGuard — Bovine Mastitis Early Warning" },
+      {
+        property: "og:description",
+        content: "Herd risk scores, forecasts and alerts powered by an ML pipeline.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -119,8 +125,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <I18nProvider>
+        <AppStoreProvider>
+          <AppShell>
+            {/* Required: nested routes render here. */}
+            <Outlet />
+          </AppShell>
+          <Toaster />
+        </AppStoreProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
