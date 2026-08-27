@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
 import { Route as ApiPublicPredictRiskRouteImport } from './routes/api/public/predict-risk'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const AlertsRoute = AlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistryRoute = RegistryRouteImport.update({
@@ -44,6 +50,7 @@ const ApiPublicPredictRiskRoute = ApiPublicPredictRiskRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
@@ -66,14 +75,25 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/alerts' | '/registry' | '/animals/$id' | '/api/public/predict-risk'
+    | '/'
+    | '/alerts'
+    | '/map'
+    | '/registry'
+    | '/animals/$id'
+    | '/api/public/predict-risk'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/alerts' | '/registry' | '/animals/$id' | '/api/public/predict-risk'
+    | '/'
+    | '/alerts'
+    | '/map'
+    | '/registry'
+    | '/animals/$id'
+    | '/api/public/predict-risk'
   id:
     | '__root__'
     | '/'
     | '/alerts'
+    | '/map'
     | '/registry'
     | '/animals/$id'
     | '/api/public/predict-risk'
@@ -82,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
+  MapRoute: typeof MapRoute
   RegistryRoute: typeof RegistryRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
   ApiPublicPredictRiskRoute: typeof ApiPublicPredictRiskRoute
@@ -101,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/alerts'
       fullPath: '/alerts'
       preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registry': {
@@ -130,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
+  MapRoute: MapRoute,
   RegistryRoute: RegistryRoute,
   AnimalsIdRoute: AnimalsIdRoute,
   ApiPublicPredictRiskRoute: ApiPublicPredictRiskRoute,
