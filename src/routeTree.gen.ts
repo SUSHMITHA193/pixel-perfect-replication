@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DataRouteImport } from './routes/data'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as RegistryRouteImport } from './routes/registry'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
 import { Route as ApiPublicPredictRiskRouteImport } from './routes/api/public/predict-risk'
 
@@ -25,6 +28,16 @@ const IndexRoute = IndexRouteImport.update({
 const AlertsRoute = AlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataRoute = DataRouteImport.update({
@@ -42,6 +55,11 @@ const RegistryRoute = RegistryRouteImport.update({
   path: '/registry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnimalsIdRoute = AnimalsIdRouteImport.update({
   id: '/animals/$id',
   path: '/animals/$id',
@@ -56,18 +74,24 @@ const ApiPublicPredictRiskRoute = ApiPublicPredictRiskRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/data': typeof DataRoute
   '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/data': typeof DataRoute
   '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
@@ -75,9 +99,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/auth': typeof AuthRoute
   '/data': typeof DataRoute
   '/map': typeof MapRoute
   '/registry': typeof RegistryRoute
+  '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
@@ -86,27 +113,36 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/alerts'
+    | '/analytics'
+    | '/auth'
     | '/data'
     | '/map'
     | '/registry'
+    | '/settings'
     | '/animals/$id'
     | '/api/public/predict-risk'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/alerts'
+    | '/analytics'
+    | '/auth'
     | '/data'
     | '/map'
     | '/registry'
+    | '/settings'
     | '/animals/$id'
     | '/api/public/predict-risk'
   id:
     | '__root__'
     | '/'
     | '/alerts'
+    | '/analytics'
+    | '/auth'
     | '/data'
     | '/map'
     | '/registry'
+    | '/settings'
     | '/animals/$id'
     | '/api/public/predict-risk'
   fileRoutesById: FileRoutesById
@@ -114,9 +150,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  AuthRoute: typeof AuthRoute
   DataRoute: typeof DataRoute
   MapRoute: typeof MapRoute
   RegistryRoute: typeof RegistryRoute
+  SettingsRoute: typeof SettingsRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
   ApiPublicPredictRiskRoute: typeof ApiPublicPredictRiskRoute
 }
@@ -135,6 +174,20 @@ declare module '@tanstack/react-router' {
       path: '/alerts'
       fullPath: '/alerts'
       preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data': {
@@ -158,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/$id': {
       id: '/animals/$id'
       path: '/animals/$id'
@@ -178,9 +238,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  AuthRoute: AuthRoute,
   DataRoute: DataRoute,
   MapRoute: MapRoute,
   RegistryRoute: RegistryRoute,
+  SettingsRoute: SettingsRoute,
   AnimalsIdRoute: AnimalsIdRoute,
   ApiPublicPredictRiskRoute: ApiPublicPredictRiskRoute,
 }
