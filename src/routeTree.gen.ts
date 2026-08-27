@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
 import { Route as ApiPublicPredictRiskRouteImport } from './routes/api/public/predict-risk'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistryRoute = RegistryRouteImport.update({
+  id: '/registry',
+  path: '/registry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsIdRoute = AnimalsIdRouteImport.update({
@@ -31,30 +37,35 @@ const ApiPublicPredictRiskRoute = ApiPublicPredictRiskRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/registry': typeof RegistryRoute
   '/animals/$id': typeof AnimalsIdRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/animals/$id' | '/api/public/predict-risk'
+  fullPaths: '/' | '/registry' | '/animals/$id' | '/api/public/predict-risk'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/animals/$id' | '/api/public/predict-risk'
-  id: '__root__' | '/' | '/animals/$id' | '/api/public/predict-risk'
+  to: '/' | '/registry' | '/animals/$id' | '/api/public/predict-risk'
+  id:
+    '__root__' | '/' | '/registry' | '/animals/$id' | '/api/public/predict-risk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RegistryRoute: typeof RegistryRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
   ApiPublicPredictRiskRoute: typeof ApiPublicPredictRiskRoute
 }
@@ -66,6 +77,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registry': {
+      id: '/registry'
+      path: '/registry'
+      fullPath: '/registry'
+      preLoaderRoute: typeof RegistryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/animals/$id': {
@@ -87,6 +105,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RegistryRoute: RegistryRoute,
   AnimalsIdRoute: AnimalsIdRoute,
   ApiPublicPredictRiskRoute: ApiPublicPredictRiskRoute,
 }
