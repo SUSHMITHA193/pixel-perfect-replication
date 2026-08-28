@@ -36,7 +36,7 @@ function Analytics() {
   const { predictions } = useStore();
   const [caseCost, setCaseCost] = useState([6500]);
   const prevented = predictions.filter((p) => p.risk_category === "Moderate").length;
-  const savings = prevented * caseCost[0];
+  const savings = prevented * caseCost[0]!;
 
   return (
     <div className="space-y-5">
@@ -88,7 +88,7 @@ function Analytics() {
             mastitis case.
           </p>
           <Slider value={caseCost} onValueChange={setCaseCost} min={2000} max={15000} step={500} />
-          <p className="text-sm">Cost per case: ₹{caseCost[0].toLocaleString("en-IN")}</p>
+          <p className="text-sm">Cost per case: ₹{caseCost[0]!.toLocaleString("en-IN")}</p>
           <p className="text-3xl font-bold text-primary">₹{savings.toLocaleString("en-IN")}</p>
           <p className="text-xs text-muted-foreground">Estimated avoided treatment and milk-loss cost.</p>
         </CardContent>
