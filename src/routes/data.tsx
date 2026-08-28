@@ -38,7 +38,7 @@ function DataPage() {
   const handleCsv = async (file: File) => {
     const text = await file.text();
     const [header, ...lines] = text.trim().split(/\r?\n/);
-    const cols = header.split(",").map((c) => c.trim().toLowerCase());
+    const cols = (header ?? "").split(",").map((c) => c.trim().toLowerCase());
     const parsed: LabRecord[] = lines
       .filter(Boolean)
       .map((line, i) => {

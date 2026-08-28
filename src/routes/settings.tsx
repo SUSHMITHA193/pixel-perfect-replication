@@ -36,7 +36,7 @@ function SettingsPage() {
   const [apiOut, setApiOut] = useState<string>("");
 
   const testApi = async () => {
-    const a = animals[0];
+    const a = animals[0]!;
     const res = await fetch("/api/public/predict-risk", {
       method: "POST",
       headers: { "content-type": "application/json" },

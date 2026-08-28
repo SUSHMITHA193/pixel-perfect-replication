@@ -101,16 +101,16 @@ const HISTORY = ["Subclinical mastitis (2025)", "Clinical mastitis (2024)", "Foo
 
 export const animals: Animal[] = NAMES.map((name, i) => {
   const r = seeded(hash(name) + i);
-  const farm = farms[i % farms.length];
+  const farm = farms[i % farms.length]!;
   return {
     id: `A${String(i + 1).padStart(3, "0")}`,
     tag: `IN-${farm.id}-${1200 + i * 7}`,
     name,
-    breed: BREEDS[Math.floor(r() * BREEDS.length)],
+    breed: BREEDS[Math.floor(r() * BREEDS.length)]!,
     age: 3 + Math.floor(r() * 8),
     lactation_number: 1 + Math.floor(r() * 5),
     vaccinated: r() > 0.25,
-    disease_history: r() > 0.55 ? [HISTORY[Math.floor(r() * HISTORY.length)]] : [],
+    disease_history: r() > 0.55 ? [HISTORY[Math.floor(r() * HISTORY.length)]!] : [],
     collar_device_id: `CLR-${8000 + i * 13}`,
     farm_id: farm.id,
   };
@@ -149,8 +149,8 @@ export function categoryFor(score: number): RiskCategory {
 export function mockPrediction(animalId: string, live = false): PredictionResponse {
   const series = getSensorSeries(animalId);
   const r = seeded(hash(animalId) * 7 + (live ? 3 : 1));
-  const last = series[series.length - 1];
-  const first = series[0];
+  const last = series[series.length - 1]!;
+  const first = series[0]!;
 
   const tempDelta = +(last.temperature - 38.5).toFixed(2);
   const rumDrop = Math.round(((first.rumination - last.rumination) / first.rumination) * 100);
@@ -168,7 +168,7 @@ export function mockPrediction(animalId: string, live = false): PredictionRespon
   );
   if (live) score = Math.max(0, Math.min(100, score + Math.round((r() - 0.5) * 10)));
 
-  const factors: RiskFactor[] = [
+  const factors: RiskFactor[] = ([
     {
       factor: `Body temperature ${tempDelta >= 0 ? "+" : ""}${tempDelta}°C vs baseline`,
       contribution_value: +(tempDelta * 0.21).toFixed(3),
@@ -194,13 +194,13 @@ export function mockPrediction(animalId: string, live = false): PredictionRespon
       contribution_value: +((r() - 0.4) * 0.12).toFixed(3),
       direction: r() > 0.45 ? "increases" : "decreases",
     },
-  ].sort((a, b) => Math.abs(b.contribution_value) - Math.abs(a.contribution_value));
+  ] as RiskFactor[]).sort((a, b) => Math.abs(b.contribution_value) - Math.abs(a.contribution_value));
 
   const anomaly_flag = r() > 0.86;
 
   const forecast_series: ForecastPoint[] = [];
   for (let d = -13; d <= 0; d++) {
-    const s = series[series.length + d - 1] ?? last;
+    const s: SensorPoint = series[series.length + d - 1] ?? last;
     forecast_series.push({
       day: d,
       date: s.date,

@@ -35,7 +35,7 @@ const empty = (n: number): Animal => ({
   vaccinated: true,
   disease_history: [],
   collar_device_id: "",
-  farm_id: farms[0].id,
+  farm_id: farms[0]!.id,
 });
 
 function Registry() {
