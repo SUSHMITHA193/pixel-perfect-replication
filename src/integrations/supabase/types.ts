@@ -14,16 +14,542 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          actions: Json
+          animal_id: string
+          anomaly: boolean
+          created_at: string
+          id: string
+          prediction_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          risk_category: Database["public"]["Enums"]["risk_category"]
+          status: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          actions?: Json
+          animal_id: string
+          anomaly?: boolean
+          created_at?: string
+          id?: string
+          prediction_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_category: Database["public"]["Enums"]["risk_category"]
+          status?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          actions?: Json
+          animal_id?: string
+          anomaly?: boolean
+          created_at?: string
+          id?: string
+          prediction_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_category?: Database["public"]["Enums"]["risk_category"]
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alerts_prediction_id_fkey"
+            columns: ["prediction_id"]
+            isOneToOne: false
+            referencedRelation: "predictions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      animals: {
+        Row: {
+          age: number
+          breed: string
+          collar_device_id: string | null
+          created_at: string
+          disease_history: Json
+          farm_id: string
+          id: string
+          lactation_number: number
+          name: string
+          tag: string
+          updated_at: string
+          vaccination_status: boolean
+        }
+        Insert: {
+          age?: number
+          breed: string
+          collar_device_id?: string | null
+          created_at?: string
+          disease_history?: Json
+          farm_id: string
+          id?: string
+          lactation_number?: number
+          name: string
+          tag: string
+          updated_at?: string
+          vaccination_status?: boolean
+        }
+        Update: {
+          age?: number
+          breed?: string
+          collar_device_id?: string | null
+          created_at?: string
+          disease_history?: Json
+          farm_id?: string
+          id?: string
+          lactation_number?: number
+          name?: string
+          tag?: string
+          updated_at?: string
+          vaccination_status?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animals_farm_id_fkey"
+            columns: ["farm_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: Json
+          entity: string
+          entity_id: string | null
+          id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          entity: string
+          entity_id?: string | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          entity?: string
+          entity_id?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      cooperatives: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      farms: {
+        Row: {
+          cooperative_id: string
+          created_at: string
+          district: string
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          cooperative_id: string
+          created_at?: string
+          district: string
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          cooperative_id?: string
+          created_at?: string
+          district?: string
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "farms_cooperative_id_fkey"
+            columns: ["cooperative_id"]
+            isOneToOne: false
+            referencedRelation: "cooperatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gateway_api_keys: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          key_hash: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key_hash: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          key_hash?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      predictions: {
+        Row: {
+          animal_id: string
+          anomaly_flag: boolean
+          anomaly_reason: string | null
+          forecast_series: Json
+          id: string
+          model_version: string
+          predicted_at: string
+          risk_category: Database["public"]["Enums"]["risk_category"]
+          risk_factors: Json
+          risk_score: number
+        }
+        Insert: {
+          animal_id: string
+          anomaly_flag?: boolean
+          anomaly_reason?: string | null
+          forecast_series?: Json
+          id?: string
+          model_version: string
+          predicted_at?: string
+          risk_category: Database["public"]["Enums"]["risk_category"]
+          risk_factors?: Json
+          risk_score: number
+        }
+        Update: {
+          animal_id?: string
+          anomaly_flag?: boolean
+          anomaly_reason?: string | null
+          forecast_series?: Json
+          id?: string
+          model_version?: string
+          predicted_at?: string
+          risk_category?: Database["public"]["Enums"]["risk_category"]
+          risk_factors?: Json
+          risk_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          cooperative_id: string | null
+          created_at: string
+          farm_id: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cooperative_id?: string | null
+          created_at?: string
+          farm_id?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cooperative_id?: string | null
+          created_at?: string
+          farm_id?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_cooperative_id_fkey"
+            columns: ["cooperative_id"]
+            isOneToOne: false
+            referencedRelation: "cooperatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_farm_id_fkey"
+            columns: ["farm_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sensor_readings: {
+        Row: {
+          activity_level: number | null
+          animal_id: string
+          battery_level: number | null
+          body_temperature: number | null
+          created_at: string
+          gps_lat: number | null
+          gps_lng: number | null
+          id: string
+          milk_yield: number | null
+          rumination_minutes: number | null
+          scc: number | null
+          source: Database["public"]["Enums"]["reading_source"]
+          timestamp: string
+        }
+        Insert: {
+          activity_level?: number | null
+          animal_id: string
+          battery_level?: number | null
+          body_temperature?: number | null
+          created_at?: string
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          milk_yield?: number | null
+          rumination_minutes?: number | null
+          scc?: number | null
+          source?: Database["public"]["Enums"]["reading_source"]
+          timestamp?: string
+        }
+        Update: {
+          activity_level?: number | null
+          animal_id?: string
+          battery_level?: number | null
+          body_temperature?: number | null
+          created_at?: string
+          gps_lat?: number | null
+          gps_lng?: number | null
+          id?: string
+          milk_yield?: number | null
+          rumination_minutes?: number | null
+          scc?: number | null
+          source?: Database["public"]["Enums"]["reading_source"]
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sensor_readings_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      treatment_records: {
+        Row: {
+          animal_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          record_type: string
+          recorded_at: string
+          value: string | null
+        }
+        Insert: {
+          animal_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          record_type: string
+          recorded_at?: string
+          value?: string | null
+        }
+        Update: {
+          animal_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          record_type?: string
+          recorded_at?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_records_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vet_farm_assignments: {
+        Row: {
+          created_at: string
+          farm_id: string
+          id: string
+          vet_id: string
+        }
+        Insert: {
+          created_at?: string
+          farm_id: string
+          id?: string
+          vet_id: string
+        }
+        Update: {
+          created_at?: string
+          farm_id?: string
+          id?: string
+          vet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vet_farm_assignments_farm_id_fkey"
+            columns: ["farm_id"]
+            isOneToOne: false
+            referencedRelation: "farms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vet_recommendations: {
+        Row: {
+          animal_id: string | null
+          created_at: string
+          created_by: string | null
+          domain: string
+          id: string
+          source: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          animal_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          domain: string
+          id?: string
+          source?: string
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          animal_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          domain?: string
+          id?: string
+          source?: string
+          text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vet_recommendations_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_edit_animal: {
+        Args: { _animal_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_edit_farm: {
+        Args: { _farm_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_animal: {
+        Args: { _animal_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_farm: {
+        Args: { _farm_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "farmer" | "veterinarian" | "coop_admin" | "authority"
+      reading_source: "collar" | "manual" | "csv_import"
+      risk_category: "No Risk" | "Low" | "Moderate" | "High"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +676,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["farmer", "veterinarian", "coop_admin", "authority"],
+      reading_source: ["collar", "manual", "csv_import"],
+      risk_category: ["No Risk", "Low", "Moderate", "High"],
+    },
   },
 } as const
