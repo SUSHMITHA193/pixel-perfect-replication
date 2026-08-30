@@ -10,9 +10,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/app-store";
-import { usageTrend } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 
@@ -32,9 +34,50 @@ export const Route = createFileRoute("/analytics")({
   component: Analytics,
 });
 
+const MONTH = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+
 function Analytics() {
-  const { predictions } = useStore();
+  const { predictions, records } = useStore();
+  const { user } = useAuth();
   const [caseCost, setCaseCost] = useState([6500]);
+
+  const riskHistoryQ = useQuery({
+    queryKey: ["risk-history", user?.id ?? "anon"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("predictions")
+        .select("risk_score, predicted_at")
+        .order("predicted_at", { ascending: true })
+        .limit(5000);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const riskTrend = useMemo(() => {
+    const buckets = new Map<string, { sum: number; n: number }>();
+    for (const p of riskHistoryQ.data ?? []) {
+      const key = MONTH(p.predicted_at);
+      const b = buckets.get(key) ?? { sum: 0, n: 0 };
+      b.sum += p.risk_score;
+      b.n += 1;
+      buckets.set(key, b);
+    }
+    return [...buckets.entries()].map(([month, b]) => ({ month, risk_avg: Math.round(b.sum / b.n) }));
+  }, [riskHistoryQ.data]);
+
+  const treatmentTrend = useMemo(() => {
+    const buckets = new Map<string, number>();
+    for (const r of records) {
+      if (r.type !== "Treatment") continue;
+      const key = MONTH(r.date);
+      buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    }
+    return [...buckets.entries()].map(([month, treatments]) => ({ month, treatments }));
+  }, [records]);
+
   const prevented = predictions.filter((p) => p.risk_category === "Moderate").length;
   const savings = prevented * caseCost[0]!;
 
@@ -48,15 +91,19 @@ function Analytics() {
             <CardTitle className="text-base">Average herd risk trend</CardTitle>
           </CardHeader>
           <CardContent className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={usageTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Line type="monotone" dataKey="risk_avg" stroke="var(--chart-1)" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+            {riskTrend.length === 0 ? (
+              <p className="pt-16 text-center text-sm text-muted-foreground">No prediction history yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={riskTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="risk_avg" stroke="var(--chart-1)" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -65,15 +112,21 @@ function Analytics() {
             <CardTitle className="text-base">Antimicrobial treatments per month</CardTitle>
           </CardHeader>
           <CardContent className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={usageTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="treatments" fill="var(--chart-2)" radius={6} />
-              </BarChart>
-            </ResponsiveContainer>
+            {treatmentTrend.length === 0 ? (
+              <p className="pt-16 text-center text-sm text-muted-foreground">
+                No treatment records logged yet.
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={treatmentTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="treatments" fill="var(--chart-2)" radius={6} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
