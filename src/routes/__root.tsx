@@ -15,6 +15,8 @@ import { I18nProvider } from "@/lib/i18n";
 import { AppStoreProvider } from "@/lib/app-store";
 import { AppShell } from "@/components/AppShell";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/lib/auth";
+import { AuthGate } from "@/components/AuthGate";
 
 function NotFoundComponent() {
   return (
