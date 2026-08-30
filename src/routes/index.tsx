@@ -4,7 +4,7 @@ import { ArrowUpRight, Activity, Bell, Droplets } from "lucide-react";
 import { useStore } from "@/lib/app-store";
 import { useI18n } from "@/lib/i18n";
 import { RiskBadge, AnomalyBadge, RiskMeter } from "@/components/RiskBadge";
-import { farms, type RiskCategory } from "@/lib/mock-data";
+import type { RiskCategory } from "@/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 const ORDER: RiskCategory[] = ["High", "Moderate", "Low", "No Risk"];
 
 function Dashboard() {
-  const { animals, predictions, alerts, dataSource } = useStore();
+  const { animals, predictions, alerts, farms, loading } = useStore();
   const { t } = useI18n();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<RiskCategory | "All">("All");
@@ -64,10 +64,8 @@ function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t("herd_risk")}</h1>
           <p className="text-sm text-muted-foreground">
-            {animals.length} animals · {farms.length} farms · source:{" "}
-            <span className="font-semibold text-foreground">
-              {dataSource === "mock" ? "Mock predictions" : "Live model"}
-            </span>
+            {animals.length} animals · {farms.length} farms ·{" "}
+            <span className="font-semibold text-foreground">live herd data</span>
           </p>
         </div>
         <Link
@@ -175,7 +173,10 @@ function Dashboard() {
               </div>
             </Link>
           ))}
-          {rows.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">No animals match.</p>}
+          {loading && <p className="py-6 text-center text-sm text-muted-foreground">Loading herd data…</p>}
+          {!loading && rows.length === 0 && (
+            <p className="py-6 text-center text-sm text-muted-foreground">No animals match.</p>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -31,7 +31,7 @@ function DataPage() {
     animal_id: animals[0]?.id ?? "",
     type: "SCC lab result" as LabRecord["type"],
     value: "",
-    date: "2026-08-27",
+    date: new Date().toISOString().slice(0, 10),
     note: "",
   });
 
@@ -39,22 +39,25 @@ function DataPage() {
     const text = await file.text();
     const [header, ...lines] = text.trim().split(/\r?\n/);
     const cols = (header ?? "").split(",").map((c) => c.trim().toLowerCase());
-    const parsed: LabRecord[] = lines
+    const parsed: Omit<LabRecord, "id">[] = lines
       .filter(Boolean)
-      .map((line, i) => {
+      .map((line) => {
         const cells = line.split(",").map((c) => c.trim());
         const get = (name: string) => cells[cols.indexOf(name)] ?? "";
         return {
-          id: `CSV-${Date.now()}-${i}`,
           animal_id: get("animal_id") || animals[0]?.id || "",
           type: (get("type") === "Treatment" ? "Treatment" : "SCC lab result") as LabRecord["type"],
           value: get("value"),
-          date: get("date") || "2026-08-27",
+          date: get("date") || new Date().toISOString().slice(0, 10),
           note: get("note"),
         };
       });
-    addRecords(parsed);
-    toast.success(`Imported ${parsed.length} records`);
+    try {
+      await addRecords(parsed);
+      toast.success(`Imported ${parsed.length} records`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Import failed");
+    }
   };
 
   return (
@@ -123,9 +126,14 @@ function DataPage() {
                   toast.error("Value is required");
                   return;
                 }
-                addRecords([{ id: `M-${Date.now()}`, ...form }]);
-                toast.success("Record saved");
-                setForm({ ...form, value: "", note: "" });
+                void addRecords([form])
+                  .then(() => {
+                    toast.success("Record saved");
+                    setForm({ ...form, value: "", note: "" });
+                  })
+                  .catch((e: unknown) =>
+                    toast.error(e instanceof Error ? e.message : "Could not save record"),
+                  );
               }}
             >
               Save record
