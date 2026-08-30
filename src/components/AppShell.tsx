@@ -12,6 +12,7 @@ import {
 import type { ReactNode } from "react";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { useStore } from "@/lib/app-store";
+import { useAuth } from "@/lib/auth";
 
 const nav = [
   { to: "/", icon: LayoutDashboard, key: "dashboard" },
@@ -31,7 +32,8 @@ const langs: { id: Lang; label: string }[] = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { t, lang, setLang } = useI18n();
-  const { role, alerts } = useStore();
+  const { alerts } = useStore();
+  const { role, user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -79,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               to="/auth"
               className="hidden rounded-lg bg-secondary px-3 py-2 text-xs font-semibold text-secondary-foreground sm:block"
             >
-              {role}
+              {user ? role : "Sign in"}
             </Link>
           </div>
         </div>

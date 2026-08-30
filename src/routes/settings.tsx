@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useStore, type Role } from "@/lib/app-store";
+import { useStore } from "@/lib/app-store";
+import { useAuth } from "@/lib/auth";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -14,16 +13,15 @@ export const Route = createFileRoute("/settings")({
       { title: "Settings & Model Source — MastiGuard" },
       {
         name: "description",
-        content: "Switch between mock predictions and the live ML model, set language and test the predict API.",
+        content: "Manage your account, language preference and test the mastitis prediction API endpoint.",
       },
       { property: "og:title", content: "Settings & Model Source — MastiGuard" },
-      { property: "og:description", content: "Model data source toggle, language and API test console." },
+      { property: "og:description", content: "Account, language and prediction API test console." },
     ],
   }),
   component: SettingsPage,
 });
 
-const ROLES: Role[] = ["Farmer", "Veterinarian", "Cooperative Admin", "Animal Health Authority"];
 const LANGS: { id: Lang; label: string }[] = [
   { id: "en", label: "English" },
   { id: "hi", label: "हिन्दी" },
@@ -31,12 +29,17 @@ const LANGS: { id: Lang; label: string }[] = [
 ];
 
 function SettingsPage() {
-  const { dataSource, setDataSource, role, setRole, animals } = useStore();
+  const { animals, farms } = useStore();
+  const { role, user, profile, signOut } = useAuth();
   const { lang, setLang } = useI18n();
   const [apiOut, setApiOut] = useState<string>("");
 
   const testApi = async () => {
-    const a = animals[0]!;
+    const a = animals[0];
+    if (!a) {
+      toast.error("No animals available to test with");
+      return;
+    }
     const res = await fetch("/api/public/predict-risk", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -44,7 +47,6 @@ function SettingsPage() {
         animal_id: a.id,
         time_series_data: [],
         static_attributes: { breed: a.breed, age: a.age, lactation_number: a.lactation_number },
-        mode: dataSource,
       }),
     });
     setApiOut(JSON.stringify(await res.json(), null, 2));
@@ -57,32 +59,33 @@ function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Prediction data source</CardTitle>
+          <CardTitle className="text-base">Account</CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center gap-4">
-          <Switch
-            checked={dataSource === "live"}
-            onCheckedChange={(v) => setDataSource(v ? "live" : "mock")}
-          />
-          <Label>{dataSource === "live" ? "Live model" : "Mock predictions"}</Label>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Active role</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          {ROLES.map((r) => (
-            <Button
-              key={r}
-              variant={role === r ? "default" : "outline"}
-              className="min-h-11"
-              onClick={() => setRole(r)}
-            >
-              {r}
-            </Button>
-          ))}
+        <CardContent className="space-y-2 text-sm">
+          <p>
+            <span className="text-muted-foreground">Name:</span> {profile?.full_name ?? "—"}
+          </p>
+          <p>
+            <span className="text-muted-foreground">Contact:</span> {user?.email ?? user?.phone ?? "—"}
+          </p>
+          <p>
+            <span className="text-muted-foreground">Role:</span>{" "}
+            <span className="font-semibold">{role}</span>
+          </p>
+          <p>
+            <span className="text-muted-foreground">Farm:</span>{" "}
+            {farms.find((f) => f.id === profile?.farm_id)?.name ?? "All assigned farms"}
+          </p>
+          <Button
+            variant="outline"
+            className="mt-2 min-h-11"
+            onClick={() => {
+              void signOut();
+              toast.success("Signed out");
+            }}
+          >
+            Sign out
+          </Button>
         </CardContent>
       </Card>
 

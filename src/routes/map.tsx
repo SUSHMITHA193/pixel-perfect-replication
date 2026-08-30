@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { MapPin } from "lucide-react";
 import { useStore } from "@/lib/app-store";
-import { farms } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RiskBadge } from "@/components/RiskBadge";
 import { categoryFor } from "@/lib/mock-data";
@@ -26,7 +25,7 @@ export const Route = createFileRoute("/map")({
 const BOUNDS = { minLat: 8, maxLat: 32, minLng: 68, maxLng: 90 };
 
 function MapView() {
-  const { animals, predictions } = useStore();
+  const { animals, predictions, farms } = useStore();
 
   const clusters = useMemo(
     () =>
@@ -43,7 +42,7 @@ function MapView() {
           y: (1 - (f.lat - BOUNDS.minLat) / (BOUNDS.maxLat - BOUNDS.minLat)) * 100,
         };
       }),
-    [animals, predictions],
+    [animals, predictions, farms],
   );
 
   return (
@@ -78,7 +77,7 @@ function MapView() {
             ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Placeholder map with mock coordinates — bubble size and colour reflect average herd risk.
+            Farm GPS coordinates from your cooperative — bubble size and colour reflect average herd risk.
           </p>
         </CardContent>
       </Card>

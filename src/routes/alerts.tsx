@@ -22,7 +22,8 @@ export const Route = createFileRoute("/alerts")({
 });
 
 function Alerts() {
-  const { alerts } = useStore();
+  const { alerts, setAlertStatus, role } = useStore();
+  const canAct = role !== "Animal Health Authority";
 
   return (
     <div className="space-y-5">
@@ -51,17 +52,38 @@ function Alerts() {
                   <li key={act}>{act}</li>
                 ))}
               </ul>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  className="min-h-11"
-                  variant="outline"
-                  onClick={() => toast.success(`SMS queued to farmer for ${a.animal_name}`)}
-                >
-                  <MessageSquare className="size-4" /> Send SMS
-                </Button>
-                <Button className="min-h-11" onClick={() => toast.success(`Vet notified about ${a.animal_name}`)}>
-                  Notify vet
-                </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="risk-chip bg-muted text-muted-foreground">{a.status}</span>
+                {canAct && (
+                  <>
+                    <Button
+                      className="min-h-11"
+                      variant="outline"
+                      disabled={a.status !== "open"}
+                      onClick={() =>
+                        void setAlertStatus(a.id, "acknowledged")
+                          .then(() => toast.success(`Acknowledged alert for ${a.animal_name}`))
+                          .catch((e: unknown) =>
+                            toast.error(e instanceof Error ? e.message : "Could not update alert"),
+                          )
+                      }
+                    >
+                      <MessageSquare className="size-4" /> Acknowledge
+                    </Button>
+                    <Button
+                      className="min-h-11"
+                      onClick={() =>
+                        void setAlertStatus(a.id, "resolved")
+                          .then(() => toast.success(`Resolved alert for ${a.animal_name}`))
+                          .catch((e: unknown) =>
+                            toast.error(e instanceof Error ? e.message : "Could not update alert"),
+                          )
+                      }
+                    >
+                      Resolve
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

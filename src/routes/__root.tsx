@@ -15,6 +15,8 @@ import { I18nProvider } from "@/lib/i18n";
 import { AppStoreProvider } from "@/lib/app-store";
 import { AppShell } from "@/components/AppShell";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/lib/auth";
+import { AuthGate } from "@/components/AuthGate";
 
 function NotFoundComponent() {
   return (
@@ -126,13 +128,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <AppStoreProvider>
-          <AppShell>
-            {/* Required: nested routes render here. */}
-            <Outlet />
-          </AppShell>
-          <Toaster />
-        </AppStoreProvider>
+        <AuthProvider>
+          <AppStoreProvider>
+            <AppShell>
+              {/* Required: nested routes render here. */}
+              <AuthGate>
+                <Outlet />
+              </AuthGate>
+            </AppShell>
+            <Toaster />
+          </AppStoreProvider>
+        </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

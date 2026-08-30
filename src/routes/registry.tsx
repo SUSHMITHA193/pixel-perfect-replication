@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useStore } from "@/lib/app-store";
-import { farms, type Animal } from "@/lib/mock-data";
+import type { Animal } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +25,9 @@ export const Route = createFileRoute("/registry")({
   component: Registry,
 });
 
-const empty = (n: number): Animal => ({
-  id: `A${String(n).padStart(3, "0")}`,
+type Draft = Omit<Animal, "id">;
+
+const empty = (farmId: string): Draft => ({
   tag: "",
   name: "",
   breed: "Gir",
@@ -35,26 +36,30 @@ const empty = (n: number): Animal => ({
   vaccinated: true,
   disease_history: [],
   collar_device_id: "",
-  farm_id: farms[0]!.id,
+  farm_id: farmId,
 });
 
 function Registry() {
-  const { animals, upsertAnimal } = useStore();
-  const [form, setForm] = useState<Animal>(() => empty(animals.length + 1));
+  const { animals, upsertAnimal, farms, role } = useStore();
+  const canEdit = role !== "Animal Health Authority";
+  const [form, setForm] = useState<Draft>(() => empty(""));
   const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const set = <K extends keyof Animal>(k: K, v: Animal[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Animal registry</h1>
-        <Button className="min-h-11" onClick={() => setOpen((o) => !o)}>
-          <Plus className="size-4" /> Add animal
-        </Button>
+        {canEdit && (
+          <Button className="min-h-11" onClick={() => setOpen((o) => !o)}>
+            <Plus className="size-4" /> Add animal
+          </Button>
+        )}
       </div>
 
-      {open && (
+      {open && canEdit && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base">New animal</CardTitle>
@@ -101,7 +106,7 @@ function Registry() {
             <div>
               <Label>Farm</Label>
               <select
-                value={form.farm_id}
+                value={form.farm_id || farms[0]?.id || ""}
                 onChange={(e) => set("farm_id", e.target.value)}
                 className="h-11 w-full rounded-md border bg-background px-3 text-sm"
               >
@@ -132,15 +137,28 @@ function Registry() {
             <div className="sm:col-span-2">
               <Button
                 className="min-h-11 w-full"
+                disabled={saving}
                 onClick={() => {
+                  const farm_id = form.farm_id || farms[0]?.id;
                   if (!form.name || !form.tag) {
                     toast.error("Name and tag are required");
                     return;
                   }
-                  upsertAnimal(form);
-                  toast.success(`${form.name} added to the registry`);
-                  setForm(empty(animals.length + 2));
-                  setOpen(false);
+                  if (!farm_id) {
+                    toast.error("No farm available for your account");
+                    return;
+                  }
+                  setSaving(true);
+                  void upsertAnimal({ ...form, farm_id })
+                    .then(() => {
+                      toast.success(`${form.name} added to the registry`);
+                      setForm(empty(farm_id));
+                      setOpen(false);
+                    })
+                    .catch((e: unknown) =>
+                      toast.error(e instanceof Error ? e.message : "Could not save animal"),
+                    )
+                    .finally(() => setSaving(false));
                 }}
               >
                 Save animal
@@ -152,6 +170,9 @@ function Registry() {
 
       <Card>
         <CardContent className="divide-y p-0">
+          {animals.length === 0 && (
+            <p className="p-4 text-sm text-muted-foreground">No animals visible for your account yet.</p>
+          )}
           {animals.map((a) => (
             <Link
               key={a.id}

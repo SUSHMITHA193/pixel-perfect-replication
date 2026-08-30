@@ -56,12 +56,17 @@ export const ensureProfile = createServerFn({ method: "POST" })
 
     // Demo convenience: veterinarians are assigned to every farm in the cooperative.
     if (role === "veterinarian" && farms && farms.length > 0) {
-      await supabaseAdmin
+      const { data: existing } = await supabaseAdmin
         .from("vet_farm_assignments")
-        .upsert(
-          farms.map((f) => ({ vet_id: userId, farm_id: f.id })),
-          { onConflict: "vet_id,farm_id" },
-        );
+        .select("farm_id")
+        .eq("vet_id", userId);
+      const have = new Set((existing ?? []).map((r) => r.farm_id));
+      const missing = farms.filter((f) => !have.has(f.id));
+      if (missing.length > 0) {
+        await supabaseAdmin
+          .from("vet_farm_assignments")
+          .insert(missing.map((f) => ({ vet_id: userId, farm_id: f.id })));
+      }
     }
 
     return { created: true, role };

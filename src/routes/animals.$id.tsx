@@ -13,8 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChevronLeft, Pencil } from "lucide-react";
-import { useStore } from "@/lib/app-store";
-import { getSensorSeries } from "@/lib/mock-data";
+import { useStore, useSensorSeries } from "@/lib/app-store";
 import { RiskBadge, AnomalyBadge, RiskMeter } from "@/components/RiskBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,13 +49,21 @@ const SERIES = [
 
 function AnimalProfile() {
   const { id } = Route.useParams();
-  const { animals, predictions, recommendations, setRecommendations, role, records } = useStore();
+  const { animals, predictions, recommendations, updateRecommendation, role, records, loading } = useStore();
   const animal = animals.find((a) => a.id === id);
   const pred = predictions.find((p) => p.animal_id === id);
-  const series = useMemo(() => getSensorSeries(id), [id]);
+  const sensorQ = useSensorSeries(id);
+  const series = useMemo(() => sensorQ.data ?? [], [sensorQ.data]);
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+    );
+  }
   if (!animal || !pred) throw notFound();
 
   const forecast = pred.forecast_series.map((f) => ({
@@ -206,11 +213,14 @@ function AnimalProfile() {
                     <Button
                       size="sm"
                       onClick={() => {
-                        setRecommendations(
-                          recommendations.map((x) => (x.id === r.id ? { ...x, text: draft } : x)),
-                        );
-                        setEditing(null);
-                        toast.success("Recommendation updated");
+                        void updateRecommendation(r.id, draft)
+                          .then(() => {
+                            setEditing(null);
+                            toast.success("Recommendation updated");
+                          })
+                          .catch((e: unknown) =>
+                            toast.error(e instanceof Error ? e.message : "Could not update"),
+                          );
                       }}
                     >
                       Save
@@ -223,7 +233,7 @@ function AnimalProfile() {
               ) : (
                 <div className="mt-2 flex items-start gap-2">
                   <p className="flex-1 text-sm">{r.text}</p>
-                  {role === "Veterinarian" && (
+                  {(role === "Veterinarian" || role === "Cooperative Admin") && (
                     <Button
                       size="icon"
                       variant="ghost"
@@ -239,7 +249,7 @@ function AnimalProfile() {
               )}
             </div>
           ))}
-          {role !== "Veterinarian" && (
+          {role !== "Veterinarian" && role !== "Cooperative Admin" && (
             <p className="text-xs text-muted-foreground">
               Sign in as a Veterinarian to edit recommendations.
             </p>

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type DbRole } from "@/lib/auth";
@@ -36,7 +36,7 @@ type Mode = "signin" | "signup" | "otp";
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { user, loading, signOut, role, profile } = useAuth();
+  const { user, signOut, role, profile } = useAuth();
   const [mode, setMode] = useState<Mode>("signin");
   const [busy, setBusy] = useState(false);
 
@@ -48,17 +48,14 @@ function AuthPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
 
-  useEffect(() => {
-    if (!loading && user && mode !== "otp") {
-      // already signed in — nothing to do
-    }
-  }, [loading, user, mode]);
-
   const handleSignIn = async () => {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Signed in");
     void navigate({ to: "/" });
   };
@@ -74,7 +71,10 @@ function AuthPage() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Account created — check your email if confirmation is required.");
     void navigate({ to: "/" });
   };
@@ -86,7 +86,10 @@ function AuthPage() {
       options: { data: { full_name: fullName, role: dbRole } },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setOtpSent(true);
     toast.success("OTP sent to your mobile");
   };
@@ -95,7 +98,10 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Signed in");
     void navigate({ to: "/" });
   };
