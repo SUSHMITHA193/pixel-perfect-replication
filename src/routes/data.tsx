@@ -75,7 +75,7 @@ function DataPage() {
             <div>
               <Label>Animal</Label>
               <select
-                value={form.animal_id}
+                value={form.animal_id || animals[0]?.id || ""}
                 onChange={(e) => setForm({ ...form, animal_id: e.target.value })}
                 className="h-11 w-full rounded-md border bg-background px-3 text-sm"
               >
@@ -126,7 +126,12 @@ function DataPage() {
                   toast.error("Value is required");
                   return;
                 }
-                void addRecords([form])
+                const animal_id = form.animal_id || animals[0]?.id;
+                if (!animal_id) {
+                  toast.error("No animal available");
+                  return;
+                }
+                void addRecords([{ ...form, animal_id }])
                   .then(() => {
                     toast.success("Record saved");
                     setForm({ ...form, value: "", note: "" });
@@ -167,7 +172,10 @@ function DataPage() {
             <div className="max-h-80 space-y-2 overflow-auto">
               {records.map((r) => (
                 <div key={r.id} className="rounded-lg border p-2 text-sm">
-                  <span className="font-semibold">{r.animal_id}</span> · {r.type} · {r.value} · {r.date}
+                  <span className="font-semibold">
+                    {animals.find((a) => a.id === r.animal_id)?.name ?? r.animal_id}
+                  </span>{" "}
+                  · {r.type} · {r.value} · {r.date}
                 </div>
               ))}
               {records.length === 0 && <p className="text-sm text-muted-foreground">No records yet.</p>}
