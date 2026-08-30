@@ -58,7 +58,10 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Signed in");
     void navigate({ to: "/" });
   };
@@ -74,7 +77,10 @@ function AuthPage() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Account created — check your email if confirmation is required.");
     void navigate({ to: "/" });
   };
@@ -86,7 +92,10 @@ function AuthPage() {
       options: { data: { full_name: fullName, role: dbRole } },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setOtpSent(true);
     toast.success("OTP sent to your mobile");
   };
@@ -95,7 +104,10 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Signed in");
     void navigate({ to: "/" });
   };

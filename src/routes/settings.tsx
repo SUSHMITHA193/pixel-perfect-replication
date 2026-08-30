@@ -36,7 +36,10 @@ function SettingsPage() {
 
   const testApi = async () => {
     const a = animals[0];
-    if (!a) return toast.error("No animals available to test with");
+    if (!a) {
+      toast.error("No animals available to test with");
+      return;
+    }
     const res = await fetch("/api/public/predict-risk", {
       method: "POST",
       headers: { "content-type": "application/json" },
