@@ -126,13 +126,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <AppStoreProvider>
-          <AppShell>
-            {/* Required: nested routes render here. */}
-            <Outlet />
-          </AppShell>
-          <Toaster />
-        </AppStoreProvider>
+        <AuthProvider>
+          <AppStoreProvider>
+            <AppShell>
+              {/* Required: nested routes render here. */}
+              <AuthGate>
+                <Outlet />
+              </AuthGate>
+            </AppShell>
+            <Toaster />
+          </AppStoreProvider>
+        </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
   );
