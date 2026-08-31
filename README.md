@@ -1,10 +1,8 @@
-# Pixel Perfect Replication
+# Bovine_Mastitis_detection
 
 Implement exactly the screenshot and nothing else
 
 This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/89b19b6d-a904-4aed-8757-12532282295c).
 
