@@ -1,15 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { mockPrediction } from "@/lib/mock-data";
+import { predictForAnimal, persistPrediction } from "@/lib/prediction.server";
+import { verifyGatewayKey } from "@/lib/gateway-auth.server";
 
-// Single integration point for the external ML pipeline.
-// While the real service is not connected, this returns mock responses in
-// the exact production schema so the UI needs no changes when wired up.
+// Single integration point for the ML pipeline.
+// Order of preference: external service at ML_API_URL -> on-board model over
+// stored collar readings -> deterministic mock (demo animals with no data).
+const SeriesPointSchema = z.object({
+  date: z.string(),
+  temperature: z.number(),
+  activity: z.number(),
+  rumination: z.number(),
+  milk_yield: z.number(),
+  scc: z.number(),
+});
+
 const PayloadSchema = z.object({
   animal_id: z.string(),
-  time_series_data: z.array(z.record(z.string(), z.any())).optional(),
+  time_series_data: z.array(SeriesPointSchema).max(365).optional(),
   static_attributes: z.record(z.string(), z.any()).optional(),
   mode: z.enum(["mock", "live"]).optional(),
+  persist: z.boolean().optional(),
 });
 
 export const Route = createFileRoute("/api/public/predict-risk")({
@@ -26,8 +37,24 @@ export const Route = createFileRoute("/api/public/predict-risk")({
         if (!parsed.success) {
           return Response.json({ error: "Invalid payload", issues: parsed.error.issues }, { status: 400 });
         }
-        const prediction = mockPrediction(parsed.data.animal_id, parsed.data.mode === "live");
-        return Response.json(prediction);
+
+        const { animal_id, time_series_data, static_attributes, mode, persist } = parsed.data;
+
+        const prediction = await predictForAnimal(animal_id, {
+          series: time_series_data ?? [],
+          statics: static_attributes ?? {},
+          forceMock: mode === "mock",
+        });
+
+        // Writing results back to the herd requires a gateway API key.
+        let stored: { prediction_id: string | null; alert_id: string | null } | undefined;
+        if (persist) {
+          const gateway = await verifyGatewayKey(request.headers.get("x-api-key"));
+          if (!gateway) return Response.json({ error: "Unauthorized: persist requires a gateway API key" }, { status: 401 });
+          stored = await persistPrediction(animal_id, prediction);
+        }
+
+        return Response.json({ ...prediction, ...(stored ? { stored } : {}) });
       },
     },
   },
