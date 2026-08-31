@@ -6,6 +6,10 @@ import { useI18n, type Lang } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Input } from "@/components/ui/input";
+import { createGatewayKey, listGatewayKeys, revokeGatewayKey } from "@/lib/gateway-keys.functions";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -30,7 +34,8 @@ const LANGS: { id: Lang; label: string }[] = [
 
 function SettingsPage() {
   const { animals, farms } = useStore();
-  const { role, user, profile, signOut } = useAuth();
+  const { role, dbRole, user, profile, signOut } = useAuth();
+  const origin = typeof window === "undefined" ? "https://your-app.lovable.app" : window.location.origin;
   const { lang, setLang } = useI18n();
   const [apiOut, setApiOut] = useState<string>("");
 
