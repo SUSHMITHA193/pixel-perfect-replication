@@ -225,6 +225,3 @@ function GatewayKeysCard() {
     </Card>
   );
 }
-
-  );
-}
