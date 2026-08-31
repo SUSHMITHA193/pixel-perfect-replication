@@ -120,6 +120,106 @@ function SettingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {dbRole === "coop_admin" && <GatewayKeysCard />}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">IoT collar ingestion — POST /api/public/ingest</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p className="text-muted-foreground">
+            Collar gateways authenticate with the header <code className="font-mono">x-api-key</code> and post batches of
+            readings. Each batch is scored by the model and opens alerts automatically.
+          </p>
+          <pre className="overflow-auto rounded-xl bg-muted p-3 text-xs">{`curl -X POST ${origin}/api/public/ingest \\
+  -H "content-type: application/json" \\
+  -H "x-api-key: <gateway key>" \\
+  -d '{"readings":[{"collar_device_id":"CLR-8000","body_temperature":39.2,
+        "activity_level":54,"rumination_minutes":390,"milk_yield":11.4,"scc":420,
+        "battery_level":88}]}'`}</pre>
+        </CardContent>
+      </Card>
     </div>
+  );
+}
+
+function GatewayKeysCard() {
+  const list = useServerFn(listGatewayKeys);
+  const create = useServerFn(createGatewayKey);
+  const revoke = useServerFn(revokeGatewayKey);
+  const qc = useQueryClient();
+  const [name, setName] = useState("");
+  const [fresh, setFresh] = useState<string | null>(null);
+
+  const keys = useQuery({ queryKey: ["gateway-keys"], queryFn: () => list({ data: undefined as never }) });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">IoT gateway API keys</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <Input
+            className="h-11 max-w-xs"
+            placeholder="Gateway name (e.g. Anand shed 1)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Button
+            className="min-h-11"
+            disabled={name.trim().length < 2}
+            onClick={() => {
+              void create({ data: { name: name.trim() } })
+                .then((r) => {
+                  setFresh(r.key);
+                  setName("");
+                  void qc.invalidateQueries({ queryKey: ["gateway-keys"] });
+                  toast.success("Key created — copy it now, it is shown once");
+                })
+                .catch((e: Error) => toast.error(e.message));
+            }}
+          >
+            Create key
+          </Button>
+        </div>
+
+        {fresh && (
+          <pre className="overflow-auto rounded-xl border border-primary/40 bg-primary/10 p-3 text-xs">{fresh}</pre>
+        )}
+
+        <ul className="divide-y rounded-xl border">
+          {(keys.data ?? []).map((k) => (
+            <li key={k.id} className="flex items-center justify-between gap-3 p-3 text-sm">
+              <span>
+                {k.name}{" "}
+                <span className="text-muted-foreground">{k.active ? "· active" : "· revoked"}</span>
+              </span>
+              {k.active && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    void revoke({ data: { id: k.id } }).then(() => {
+                      void qc.invalidateQueries({ queryKey: ["gateway-keys"] });
+                      toast.success("Key revoked");
+                    });
+                  }}
+                >
+                  Revoke
+                </Button>
+              )}
+            </li>
+          ))}
+          {(keys.data ?? []).length === 0 && (
+            <li className="p-3 text-sm text-muted-foreground">No gateway keys issued yet.</li>
+          )}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
   );
 }
