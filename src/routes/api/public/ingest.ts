@@ -96,7 +96,7 @@ export const Route = createFileRoute("/api/public/ingest")({
           [];
 
         if (parsed.data.predict !== false) {
-          const animalIds = [...new Set(rows.map((r) => r.animal_id as string))].slice(0, 25);
+          const animalIds = [...new Set(rows.map((r) => r['animal_id'] as string))].slice(0, 25);
           for (const animalId of animalIds) {
             const pred = await predictForAnimal(animalId);
             const { alert_id } = await persistPrediction(animalId, pred);
