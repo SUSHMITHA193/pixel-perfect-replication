@@ -18,6 +18,7 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as AnimalsIdRouteImport } from './routes/animals.$id'
+import { Route as ApiPublicIngestRouteImport } from './routes/api/public/ingest'
 import { Route as ApiPublicPredictRiskRouteImport } from './routes/api/public/predict-risk'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const AnimalsIdRoute = AnimalsIdRouteImport.update({
   path: '/animals/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicIngestRoute = ApiPublicIngestRouteImport.update({
+  id: '/api/public/ingest',
+  path: '/api/public/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPredictRiskRoute = ApiPublicPredictRiskRouteImport.update({
   id: '/api/public/predict-risk',
   path: '/api/public/predict-risk',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/registry': typeof RegistryRoute
   '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/ingest': typeof ApiPublicIngestRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/registry': typeof RegistryRoute
   '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/ingest': typeof ApiPublicIngestRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/registry': typeof RegistryRoute
   '/settings': typeof SettingsRoute
   '/animals/$id': typeof AnimalsIdRoute
+  '/api/public/ingest': typeof ApiPublicIngestRoute
   '/api/public/predict-risk': typeof ApiPublicPredictRiskRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/registry'
     | '/settings'
     | '/animals/$id'
+    | '/api/public/ingest'
     | '/api/public/predict-risk'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/registry'
     | '/settings'
     | '/animals/$id'
+    | '/api/public/ingest'
     | '/api/public/predict-risk'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/registry'
     | '/settings'
     | '/animals/$id'
+    | '/api/public/ingest'
     | '/api/public/predict-risk'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   RegistryRoute: typeof RegistryRoute
   SettingsRoute: typeof SettingsRoute
   AnimalsIdRoute: typeof AnimalsIdRoute
+  ApiPublicIngestRoute: typeof ApiPublicIngestRoute
   ApiPublicPredictRiskRoute: typeof ApiPublicPredictRiskRoute
 }
 
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimalsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ingest': {
+      id: '/api/public/ingest'
+      path: '/api/public/ingest'
+      fullPath: '/api/public/ingest'
+      preLoaderRoute: typeof ApiPublicIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/predict-risk': {
       id: '/api/public/predict-risk'
       path: '/api/public/predict-risk'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistryRoute: RegistryRoute,
   SettingsRoute: SettingsRoute,
   AnimalsIdRoute: AnimalsIdRoute,
+  ApiPublicIngestRoute: ApiPublicIngestRoute,
   ApiPublicPredictRiskRoute: ApiPublicPredictRiskRoute,
 }
 export const routeTree = rootRouteImport
